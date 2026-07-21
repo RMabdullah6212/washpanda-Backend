@@ -1,15 +1,36 @@
 const mongoose = require('mongoose');
 
+let connectionPromise;
+let listenersAttached = false;
+
 async function connectDatabase(uri) {
-  mongoose.connection.on('connected', () => {
-    console.log('MongoDB connected');
-  });
+  if (!uri) throw new Error('MONGODB_URI is required');
 
-  mongoose.connection.on('error', (error) => {
-    console.error('MongoDB connection error:', error.message);
-  });
+  if (mongoose.connection.readyState === 1) {
+    return mongoose.connection;
+  }
 
-  await mongoose.connect(uri);
+  if (!listenersAttached) {
+    mongoose.connection.on('connected', () => {
+      console.log('MongoDB connected');
+    });
+
+    mongoose.connection.on('error', (error) => {
+      console.error('MongoDB connection error:', error.message);
+    });
+
+    listenersAttached = true;
+  }
+
+  if (!connectionPromise) {
+    connectionPromise = mongoose.connect(uri).catch((error) => {
+      connectionPromise = undefined;
+      throw error;
+    });
+  }
+
+  await connectionPromise;
+  return mongoose.connection;
 }
 
 module.exports = connectDatabase;

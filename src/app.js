@@ -1,6 +1,7 @@
 const express = require('express');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const connectDatabase = require('./config/database');
 const corsMiddleware = require('./middleware/cors');
 const { apiLimiter } = require('./middleware/rateLimiter');
 const { errorHandler, notFound } = require('./middleware/errorHandler');
@@ -19,6 +20,14 @@ app.use(helmet());
 app.use(corsMiddleware);
 app.use(express.json({ limit: '100kb' }));
 app.use(express.urlencoded({ extended: false, limit: '100kb' }));
+app.use(async (req, res, next) => {
+  try {
+    await connectDatabase(process.env.MONGODB_URI);
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use('/api', apiLimiter);
 
