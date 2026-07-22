@@ -21,5 +21,6 @@ const galleryItemSchema = new mongoose.Schema(
 );
 
 galleryItemSchema.index({ isActive: 1, sortOrder: 1, createdAt: -1 });
+galleryItemSchema.index({ isActive: 1, mediaType: 1, createdAt: -1 });
 
 module.exports = mongoose.model('GalleryItem', galleryItemSchema);

@@ -8,6 +8,7 @@
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
     "seed": "node src/scripts/seed.js",
+    "seed:gallery": "node src/scripts/seedGallery.js",
     "seed:admin": "node src/scripts/seedAdmin.js",
     "check": "node --check src/server.js && node --check src/app.js"
   },

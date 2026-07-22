@@ -36,8 +36,9 @@ function videoThumbnail(publicId) {
 }
 
 async function listPublic() {
-  return GalleryItem.find({ isActive: true })
-    .sort({ sortOrder: 1, createdAt: -1 })
+  return GalleryItem.find({ isActive: true, mediaType: 'image' })
+    .sort({ createdAt: -1 })
+    .limit(6)
     .lean();
 }
 
