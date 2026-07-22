@@ -3,6 +3,7 @@ const ServicePackage = require('../models/ServicePackage');
 const Addon = require('../models/Addon');
 const TimeSlot = require('../models/TimeSlot');
 const AppError = require('../utils/AppError');
+const configureCloudinary = require('../config/cloudinary');
 
 const models = {
   'vehicle-types': VehicleType,
@@ -59,6 +60,13 @@ async function remove(resource, id) {
       { vehicleTypeId: item._id, isActive: true },
       { $set: { isActive: false } }
     );
+
+    if (item.imagePublicId) {
+      configureCloudinary().uploader.destroy(item.imagePublicId, {
+        resource_type: 'image',
+        invalidate: true,
+      }).catch((error) => console.error('Unable to remove vehicle photo:', error.message));
+    }
   }
 
   return item;

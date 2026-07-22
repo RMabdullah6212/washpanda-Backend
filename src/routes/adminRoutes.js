@@ -8,6 +8,7 @@ const adminCatalogController = require('../controllers/adminCatalogController');
 const galleryController = require('../controllers/galleryController');
 const galleryUpload = require('../middleware/galleryUpload');
 const profilePhotoUpload = require('../middleware/profilePhotoUpload');
+const vehicleTypeUpload = require('../middleware/vehicleTypeUpload');
 const authController = require('../controllers/authController');
 const { createAdminSchema, updateProfileSchema } = require('../validations/authSchemas');
 const {
@@ -65,6 +66,18 @@ router.delete(
   '/gallery/:id',
   validate(galleryIdParamsSchema, 'params'),
   galleryController.remove
+);
+
+router.post(
+  '/vehicle-types',
+  vehicleTypeUpload.single('image'),
+  adminCatalogController.createVehicleType
+);
+router.patch(
+  '/vehicle-types/:id',
+  validate(catalogItemParamsSchema.pick({ id: true }), 'params'),
+  vehicleTypeUpload.single('image'),
+  adminCatalogController.updateVehicleType
 );
 
 router.get(
